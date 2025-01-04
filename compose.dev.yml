@@ -1,0 +1,59 @@
+version: "3"
+
+x-base-template: &base-template
+  restart: unless-stopped
+  security_opt:
+    - label:type:container_runtime_t
+
+services:
+  development:
+    <<: *base-template
+    image: docker.io/library/php:8.2.15
+    stdin_open: true
+    tty: true
+    entrypoint: /bin/sh
+    stop_signal: SIGKILL
+    volumes:
+      - .:/development:rw
+      - ./config/dev/php.ini:/usr/local/etc/php/php.ini:ro
+    
+  phpmyadmin:
+    <<: *base-template
+    image: docker.io/library/phpmyadmin:5.2.1-apache
+    environment:
+      PMA_ABSOLUTE_URI: http://localhost:8080/pma/
+      PMA_HOST: ${DATABASE_URI}
+      PMA_USER: ${DATABASE_USER}
+      PMA_PASSWORD: ${DATABASE_PASSWORD}
+
+  webserver:
+    <<: *base-template
+    build:
+      context: .
+      dockerfile: webserver.containerfile
+    env_file: ".env"
+    ports:
+      - "8080:80"
+    volumes:
+      - ./www:/var/www/html:ro
+      - ./config/dev/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./config/dev/httpd.conf:/etc/apache2/sites-enabled/000-default.conf:ro
+
+  database:
+    <<: *base-template
+    image: docker.io/library/mariadb:10.6.16
+    user: 999:999
+    x-podman.uidmaps:
+      - "0:1:1"
+      - "999:0:1"
+    x-podman.gidmaps:
+      - "0:1:1"
+      - "999:0:1"
+    environment:
+      MARIADB_RANDOM_ROOT_PASSWORD: 1
+      MARIADB_DATABASE: ${DATABASE_NAME}
+      MARIADB_USER: ${DATABASE_USER}
+      MARIADB_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - ./database/dev:/var/lib/mysql
+      - ./config/dev/database.sql:/docker-entrypoint-initdb.d/database.sql

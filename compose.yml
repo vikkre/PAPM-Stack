@@ -1,0 +1,39 @@
+version: "3"
+
+x-base-template: &base-template
+  restart: unless-stopped
+  security_opt:
+    - label:type:container_runtime_t
+
+services:
+  webserver:
+    <<: *base-template
+    build:
+      context: .
+      dockerfile: webserver.containerfile
+    env_file: ".env"
+    ports:
+      - "80:80"
+    volumes:
+      - ./www:/var/www/html:ro
+      - ./config/prod/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./config/prod/httpd.conf:/etc/apache2/sites-enabled/000-default.conf:ro
+
+  database:
+    <<: *base-template
+    image: docker.io/library/mariadb:10.6.16
+    user: 999:999
+    x-podman.uidmaps:
+      - "0:1:1"
+      - "999:0:1"
+    x-podman.gidmaps:
+      - "0:1:1"
+      - "999:0:1"
+    environment:
+      MARIADB_RANDOM_ROOT_PASSWORD: 1
+      MARIADB_DATABASE: ${DATABASE_NAME}
+      MARIADB_USER: ${DATABASE_USER}
+      MARIADB_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - ./database/prod:/var/lib/mysql
+      - ./config/prod/database.sql:/docker-entrypoint-initdb.d/database.sql
