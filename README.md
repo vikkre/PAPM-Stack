@@ -1,11 +1,10 @@
-# Podman-Apache-PHP-MariaDB-Stack (PAPM)
+# Podman-Apache-PHP-MariaDB-Stack (PAPM Stack)
 
 PAPM stack setup with podman-compose.
 Execute it by running:
 ```
 podman-compose up
 ```
-(Did you know that you can set up podman-compose collections as a systemd service? See `podman-compose --help` under `systemd` for more info.)
 Requires root privileges to access port 80.
 Alternatively, you can use port forwarding or a reverse proxy by configuring a different port in the `compose.yml' file.
 
