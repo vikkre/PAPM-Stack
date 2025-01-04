@@ -25,5 +25,5 @@ systemd   create systemd unit file and register its compose stacks
 ## Dev
 
 Includes a development environment for VS-Code with phpMyAdmin.
-Just 'run in container' with VS-Code with the Devcontainer extention.
+Just 'Reopen in Container' with VS-Code with the Devcontainer extention.
 Web can be accessed via port 8080, phpMyAdmin via URL path `/pma`.
