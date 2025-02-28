@@ -8,11 +8,12 @@ x-base-template: &base-template
 services:
   development:
     <<: *base-template
-    image: docker.io/library/php:8.2.15
+    build:
+      context: .
+      dockerfile: development.containerfile
     stdin_open: true
     tty: true
-    entrypoint: /bin/sh
-    stop_signal: SIGKILL
+    entrypoint: ["/bin/bash", "-c", "trap : TERM INT; sleep infinity & wait"]
     volumes:
       - .:/development:rw
       - ./config/dev/php.ini:/usr/local/etc/php/php.ini:ro

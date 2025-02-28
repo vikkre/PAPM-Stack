@@ -1,5 +1,5 @@
 {
-	"name": "pamp-dev",
+	"name": "lamp-dev",
 	"dockerComposeFile": "../compose.dev.yml",
 	"service": "development",
 	"workspaceFolder": "/development"
