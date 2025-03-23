@@ -10,10 +10,10 @@ services:
     <<: *base-template
     build:
       context: .
-      dockerfile: webserver.containerfile
+      dockerfile: containerfiles/webserver.containerfile
     env_file: ".env"
     ports:
-      - "80:80"
+      - "${OUTGOING_PORT}:80"
     volumes:
       - ./www:/var/www/html:ro
       - ./config/prod/php.ini:/usr/local/etc/php/php.ini:ro

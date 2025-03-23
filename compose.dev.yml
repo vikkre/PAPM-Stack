@@ -10,10 +10,8 @@ services:
     <<: *base-template
     build:
       context: .
-      dockerfile: development.containerfile
-    stdin_open: true
-    tty: true
-    entrypoint: ["/bin/bash", "-c", "trap : TERM INT; sleep infinity & wait"]
+      dockerfile: containerfiles/dev.containerfile
+    entrypoint: ["/bin/bash", "-c", "trap \"exit 0\" SIGTERM SIGINT SIGKILL; sleep infinity & wait"]
     volumes:
       - .:/development:rw
       - ./config/dev/php.ini:/usr/local/etc/php/php.ini:ro
@@ -31,10 +29,10 @@ services:
     <<: *base-template
     build:
       context: .
-      dockerfile: webserver.containerfile
+      dockerfile: containerfiles/webserver.containerfile
     env_file: ".env"
     ports:
-      - "8080:80"
+      - "${OUTGOING_PORT}:80"
     volumes:
       - ./www:/var/www/html:ro
       - ./config/dev/php.ini:/usr/local/etc/php/php.ini:ro
